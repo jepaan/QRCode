@@ -361,7 +361,6 @@ static void drawFormatBits(BitBucket *modules, BitBucket *isFunction, uint8_t ec
 // based on this object's version field (which only has an effect for 7 <= version <= 40).
 static void drawVersion(BitBucket *modules, BitBucket *isFunction, uint8_t version) {
     
-    int8_t size = modules->bitOffsetOrWidth;
     // Calculate error correction code and pack bits
     uint32_t rem = version;  // version is uint6, in the range [7, 40]
     uint8_t i;
@@ -382,6 +381,7 @@ static void drawVersion(BitBucket *modules, BitBucket *isFunction, uint8_t versi
     
     // Draw two copies
     for (i = 0; i < 18; i++) {
+        int8_t size = modules->bitOffsetOrWidth;
         bool bit = ((data >> i) & 1) != 0;
         uint8_t a = size - 11 + i % 3, b = i / 3;
         setFunctionModule(modules, isFunction, a, b, bit);
@@ -416,9 +416,9 @@ static void drawFunctionPatterns(BitBucket *modules, BitBucket *isFunction, uint
         uint8_t step;
         uint8_t alignPositionIndex = alignCount - 1;
         uint8_t alignPosition[7];
-        uint8_t size = version * 4 + 17;
         uint8_t pos;
         uint8_t j;
+        size = version * 4 + 17;
         if (version != 32) {
             step = (version * 4 + alignCount * 2 + 1) / (2 * alignCount - 2) * 2;  // ceil((size - 13) / (2*numAlign - 2)) * 2
         } else { // C-C-C-Combo breaker!
